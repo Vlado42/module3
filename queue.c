@@ -1,6 +1,5 @@
 /* queue.c --- 
  * 
- * 
  * Author: Vlado Vojdanovski
  * Created: Wed Oct  9 16:21:59 2019 (-0400)
  * Version: 
@@ -9,37 +8,45 @@
  * 
  */
 
-typedef struct Element
+
+
+#include <stdlib.h>
+#include <stdint.h>
+#include <string.h>
+#include <malloc.h>
+#include "queue.h"
+
+typedef struct element
 {
 	void* data;
 	struct Element *next;
 	struct Element *prev;
-} element;
+} Element;
 	
-typedef void queue_t
+typedef struct queue
 {
 	int size;
-	void* head;
-	void* tail;
-}
+	Element* head;
+  Element* tail;
+} Queue;
 	
 queue_t* qopen(void)
 {
-	queue_t *queue = (queue_t*) malloc(sizeof(Queue)); // Initialize our queue
+	Queue  *Myqueue = (Queue*) malloc(sizeof(Queue)); // Initialize our queue
 	// and allocate memory
-	queue->size = 0; // set the queue size to 0
-	queue->head = NULL; // set the head and tail pointers to null
-	queue->tail = NULL;
+	Myqueue->size = 0; // set the queue size to 0
+	Myqueue->head = NULL; // set the head and tail pointers to null
+	Myqueue->tail = NULL;
 
-	return queue;
+	return (queue_t*)Myqueue;
 }
 
 void qclose(queue_t *qp)
 {
-	void *element
-		while(!isEmpty(qp))
+	Element *element;
+	while(((Queue*)qp)->size > 0)
 			{
-				element = qget(qp);
+				element = (Element*)qget(qp);
 				free(element); // free up the queue memory
 			}
 	free(qp);
@@ -47,50 +54,50 @@ void qclose(queue_t *qp)
 
 int32_t qput(queue_t *qp, void *elementp)
 {
-	element *lastElement = (element*)malloc(sizeof(element));
-	lastElement->data = elementp;
-	if (qp->size == 0)
+	Element *lastElement = (Element*)malloc(sizeof(Element));
+	lastElement->data = &elementp;
+	if (((Queue*)qp)->size == 0)
 		{
-			qp->head = lastElement;
-			qp->tail = lastElement;
+			((Queue*)qp)->head = lastElement;
+			((Queue*)qp)->tail = lastElement;
 		}
 	else
 		{
-			lastElement->next = qp->head;
-			qp->head->prev = lastElement;
-			qp->tail = lastElement;
+			lastElement->next = ((void*)((Queue*)qp)->head);
+			((Queue*)qp)->head->prev = (void*)lastElement;
+			((Queue*)qp)->tail = lastElement;
 		}
-	qp->size+=1;
+	((Queue*)qp)->size+=1;
 	return 0;
 }
 
 void *qget(queue_t *qp)
 {
-	void* element = qp->tail;
-	return element;
+	Element *currElement = ((Queue*)qp)->tail;
+	return currElement;
 }
 
 void qapply(queue_t *qp, void(*fn)(void* elementp))
 {
-	currElement = qp->head;
+	Element *currElement = ((Queue*)qp)->head;
 	while (currElement->next != NULL)
 		{
-			currElement = fn(currElement);
-			currElement = currElement->next;
+			fn(currElement);
+			currElement = (Element*)((Element*)currElement->next);
 		}
 }
 
 
-void* qsearch(queue *qp, bool(*searchfn)(void* elementp, const void*keyp),
+void* qsearch(queue_t *qp, bool(*searchfn)(void* elementp, const void*keyp),
 						 const void* skeyp)
 {
-	currElement = qp->head;
+	Element *currElement = ((Queue*)qp)->head;
 	while(currElement->next != NULL)
 		{
-			if searchfn(currElement, skeyp)
-									 {
-										 return currElement;
-									 }
+			if (searchfn(currElement, skeyp) == 1)
+				{
+					return (void*)currElement;
+				}
 		}
 	return NULL;
 }
@@ -98,30 +105,24 @@ void* qsearch(queue *qp, bool(*searchfn)(void* elementp, const void*keyp),
 void* qremove(queue_t *qp, bool(*searchfn)(void* elementp, const void* keyp),
 							const void* skeyp)
 {
-	element = qsearch(qp, searchfn(elementp, keyp);
-										element->prev  = element->next;
-										return element;
+	Element *currElement = ((Queue*)qp)->head;
+	Element *foundElement = (Element*)(qsearch(qp, searchfn, skeyp));
+	foundElement->prev  = foundElement->next;
+	return (void*)currElement;
 }
 
 void qconcat(queue_t *q1p, queue_t *q2p)
 {
-	if (q1p->size == 0)
+	if (((Queue*)q1p)->size > 0)
 		{
-			if (q2p->size == 0)
+			if (((Queue*)q2p)->size >0)
 				{
-					return NULL;
+					((Queue*)q1p)->head = ((Queue*)q2p)->head;
+					((Queue*)q1p)->tail = ((Queue*)q2p)->tail;
+					((Queue*)q2p)->head = NULL;
+					((Queue*)q2p)->tail = NULL;
+					qclose(q2p);
 				}
-		}
-	if (q1p->size > 0)
-		{
-			if (q2p->size >0)
-				{
-					q1->head = q2->head;
-					q1->tail = q2->tail;
-					q2->head = NULL;
-					q2->tail = NULL;
-					q2.close();
-				}
-			q2.close();
+			qclose(q2p);
 		}
 }

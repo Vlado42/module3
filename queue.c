@@ -55,7 +55,7 @@ void qclose(queue_t *qp)
 int32_t qput(queue_t *qp, void *elementp)
 {
 	Element *lastElement = (Element*)malloc(sizeof(Element));
-	lastElement->data = &elementp;
+	lastElement->data = elementp;
 	if (((Queue*)qp)->size == 0)
 		{
 			((Queue*)qp)->head = lastElement;
@@ -74,7 +74,7 @@ int32_t qput(queue_t *qp, void *elementp)
 void *qget(queue_t *qp)
 {
 	Element *currElement = ((Queue*)qp)->tail;
-	return currElement;
+	return currElement->data;
 }
 
 void qapply(queue_t *qp, void(*fn)(void* elementp))

@@ -14,23 +14,27 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>                                                           
-#include <malloc.h>                                                            
+#include <malloc.h>
+#include  <stdbool.h>
 #include "queue.h"                                                             
 
 
-typedef struct car {
+typedef struct car
+{
 	char plate[10];
 	double price;
 	int year;
 }	car_t;
 
 
-car_t *make_car( char *plate, double price, int year){
+car_t *make_car( char *plate, double price, int year)
+{
 	car_t *cp;
-	if(!(cp = (car_t*)malloc(sizeof(car_t)))) {
-		printf("[Error: malloc failed allocating car]\n");
-		return NULL;
-	}
+	if(!(cp = (car_t*)malloc(sizeof(car_t))))
+		{
+			printf("[Error: malloc failed allocating car]\n");
+			return NULL;
+		}
 	strcpy(cp->plate,plate);
 	cp->price=price;
 	cp->year=year;
@@ -40,6 +44,18 @@ car_t *make_car( char *plate, double price, int year){
 void doublePrice(void* elementp)
 {
 	((car_t*)elementp)->price*=2;
+}
+
+bool findYear(void* elementp, const void* keyp)
+{
+  if (((car_t*)elementp)->year ==((int)keyp))
+		{
+			return true;
+		}
+	else
+		{
+			return false;
+		}														 
 }
 
 int main(void)
@@ -69,6 +85,8 @@ int main(void)
 	car_t *c6 = (car_t*)qget(queue1);
 	printf("%lf", c6->price);
 
+	const void* key = (void*)77; 
+	qsearch(queue1, findYear,key); 
 	qclose(queue1);
 	exit(EXIT_SUCCESS);
 }

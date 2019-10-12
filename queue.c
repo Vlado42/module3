@@ -14,6 +14,7 @@
 #include <stdint.h>
 #include <string.h>
 #include <malloc.h>
+#include <stdbool.h>
 #include "queue.h"
 
 typedef struct element
@@ -87,14 +88,10 @@ void* qget(queue_t *qp)
 
 void qapply(queue_t *qp, void(*fn)(void* elementp))
 {
-	printf("Am I even here");
-	fflush(stdout);
 	Element *currElement = ((Queue*)qp)->head;
 		
 	while (currElement->next != NULL)
 		{
-			printf("What about here");
-			fflush(stdout);
 			fn(currElement->data);
 			currElement = (Element*)(currElement->next);
 		}
@@ -108,10 +105,15 @@ void* qsearch(queue_t *qp, bool(*searchfn)(void* elementp, const void*keyp),
 	Element *currElement = ((Queue*)qp)->head;
 	while(currElement->next != NULL)
 		{
-			if (searchfn(currElement, skeyp) == 1)
+			if (searchfn(currElement, skeyp) == true)
 				{
 					return (void*)currElement;
 				}
+			currElement = (Element*)(currElement->next);
+		}
+	if (searchfn(currElement, skeyp) == true)
+		{
+					return (void*)currElement;
 		}
 	return NULL;
 }

@@ -17,8 +17,10 @@
 #include <malloc.h>                                                            
 #include "queue.h"                                                             
 
+int main(void)
+{
+	queue_t *queue1 = qopen();
 
-queue1 = qopen();
 
-
-exit(EXIT_SUCCESS);
+	exit(EXIT_SUCCESS);
+}

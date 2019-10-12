@@ -19,8 +19,8 @@
 typedef struct element
 {
 	void* data;
-	struct Element *next;
-	struct Element *prev;
+	struct element *next;
+	struct element *prev;
 } Element;
 	
 typedef struct queue
@@ -60,31 +60,45 @@ int32_t qput(queue_t *qp, void *elementp)
 		{
 			((Queue*)qp)->head = lastElement;
 			((Queue*)qp)->tail = lastElement;
+			lastElement->next = NULL;
+			lastElement->prev = NULL;
 		}
 	else
 		{
-			lastElement->next = ((void*)((Queue*)qp)->head);
-			((Queue*)qp)->head->prev = (void*)lastElement;
-			((Queue*)qp)->tail = lastElement;
+			((Queue*)qp)->head->prev = lastElement;
+			lastElement->next = ((Queue*)qp)->head;
+			((Queue*)qp)->head = lastElement;
 		}
 	((Queue*)qp)->size+=1;
 	return 0;
 }
 
-void *qget(queue_t *qp)
+void* qget(queue_t *qp)
 {
-	Element *currElement = ((Queue*)qp)->tail;
-	return currElement->data;
+	if(((Queue*)qp)->size>0)
+		{
+			Element *currElement = ((Queue*)qp)->head;
+			((Queue*)qp)->head = ((Queue*)qp)->head->next;
+			((Queue*)qp)->size-=1;
+	
+			return currElement->data;
+		}
 }
 
 void qapply(queue_t *qp, void(*fn)(void* elementp))
 {
+	printf("Am I even here");
+	fflush(stdout);
 	Element *currElement = ((Queue*)qp)->head;
+		
 	while (currElement->next != NULL)
 		{
-			fn(currElement);
-			currElement = (Element*)((Element*)currElement->next);
+			printf("What about here");
+			fflush(stdout);
+			fn(currElement->data);
+			currElement = (Element*)(currElement->next);
 		}
+	fn(currElement->data);
 }
 
 

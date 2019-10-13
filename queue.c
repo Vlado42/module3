@@ -1,5 +1,5 @@
 /* queue.c --- 
- * 
+1;5202;0c * 
  * Author: Vlado Vojdanovski
  * Created: Wed Oct  9 16:21:59 2019 (-0400)
  * Version: 
@@ -30,7 +30,8 @@ typedef struct queue
 	Element* head;
   Element* tail;
 } Queue;
-	
+
+
 queue_t* qopen(void)
 {
 	Queue  *Myqueue = (Queue*) malloc(sizeof(Queue)); // Initialize our queue
@@ -55,7 +56,8 @@ void qclose(queue_t *qp)
 
 int32_t qput(queue_t *qp, void *elementp)
 {
-	Element *lastElement = (Element*)malloc(sizeof(Element));
+	Element *lastElement;
+	lastElement = (Element*)malloc(sizeof(Element));
 	lastElement->data = elementp;
 	if (((Queue*)qp)->size == 0)
 		{
@@ -82,7 +84,7 @@ void* qget(queue_t *qp)
 			((Queue*)qp)->head = ((Queue*)qp)->head->next;
 			((Queue*)qp)->size-=1;
 	
-			return currElement->data;
+			return currElement->data; //currElement -> data  If we are accessing the car
 		}
 }
 
@@ -105,15 +107,15 @@ void* qsearch(queue_t *qp, bool(*searchfn)(void* elementp, const void*keyp),
 	Element *currElement = ((Queue*)qp)->head;
 	while(currElement->next != NULL)
 		{
-			if (searchfn(currElement, skeyp) == true)
-				{
-					return (void*)currElement;
-				}
+			if (searchfn(currElement->data, skeyp) == true)
+			{
+					return currElement; //currElement -> data  If we are accessing obj
+ 	 		}
 			currElement = (Element*)(currElement->next);
 		}
-	if (searchfn(currElement, skeyp) == true)
+	if (searchfn(currElement->data, skeyp) == true)
 		{
-					return (void*)currElement;
+			return currElement; //currElement -> data  If we are accessing obj
 		}
 	return NULL;
 }
@@ -121,24 +123,36 @@ void* qsearch(queue_t *qp, bool(*searchfn)(void* elementp, const void*keyp),
 void* qremove(queue_t *qp, bool(*searchfn)(void* elementp, const void* keyp),
 							const void* skeyp)
 {
-	Element *currElement = ((Queue*)qp)->head;
+	//Element *currElement = ((Queue*)qp)->head;
 	Element *foundElement = (Element*)(qsearch(qp, searchfn, skeyp));
-	foundElement->prev  = foundElement->next;
-	return (void*)currElement;
+	if (foundElement != NULL)
+		{
+			foundElement->prev->next = foundElement->next;
+			free(foundElement);
+			((Queue*)qp)->size-=1;
+		}
+	return (void*)foundElement;
 }
 
 void qconcat(queue_t *q1p, queue_t *q2p)
 {
+	if (((Queue*)q2p)->size == 0)
+		{
+			qclose(q2p);
+		}	
 	if (((Queue*)q1p)->size > 0)
 		{
-			if (((Queue*)q2p)->size >0)
-				{
-					((Queue*)q1p)->head = ((Queue*)q2p)->head;
+			if (((Queue*)q2p)->size > 0)
+				{					
+					((Element*)(((Queue*)q1p)->tail))->next = ((Queue*)q2p)->head;
 					((Queue*)q1p)->tail = ((Queue*)q2p)->tail;
-					((Queue*)q2p)->head = NULL;
-					((Queue*)q2p)->tail = NULL;
+
+				 
+					((Queue*)q1p)->size+=((Queue*)q2p)->size;
+					printf("%d", ((Queue*)q1p)->size);
+					
+					fflush(stdout);
 					qclose(q2p);
 				}
-			qclose(q2p);
 		}
 }

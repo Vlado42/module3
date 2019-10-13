@@ -13,10 +13,10 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <stdio.h>
-#include <string.h>                                                           
+#include <string.h>                                                       
 #include <malloc.h>
 #include  <stdbool.h>
-#include "queue.h"                                                             
+#include "queue.h"                                                       
 
 
 typedef struct car
@@ -48,7 +48,12 @@ void doublePrice(void* elementp)
 
 bool findYear(void* elementp, const void* keyp)
 {
-  if (((car_t*)elementp)->year ==((int)keyp))
+	printf("%d", *(int *)keyp);
+	printf("\n");
+	printf("%d", ((car_t*)elementp)->year);
+	printf("\n");
+	fflush(stdout);
+  if (((car_t*)elementp)->year == *(int *)keyp)
 		{
 			return true;
 		}
@@ -66,7 +71,7 @@ int main(void)
 
 	char plate1[10];
 	strcpy(plate1,"1243");
-	car_t *c3=make_car(plate, 29.0, 73);
+	car_t *c3=make_car(plate1, 29.0, 73);
 
 	char plate2[10];
 	strcpy(plate2,"1123");
@@ -79,14 +84,29 @@ int main(void)
 
 	qapply(queue1, doublePrice);
 
-	
+
+	//	printf("Size of queue is %d '\n'", size(queue1));
+	int val = 77;
+	const void* key = &val; 
+	void* myEl = qremove(queue1, findYear,key);
+	//car_t *cs = (car_t*)((myEl->data);
+	//if(myEl != NULL)
+	//	{
+	//		printf("%d", cs->data);
+	//		printf("\n");
+	//	}
+	//	printf("Size of queue is %d '\n'", size(queue1));
 	car_t *c2 = (car_t*)qget(queue1);
 	car_t *c4 = (car_t*)qget(queue1);
 	car_t *c6 = (car_t*)qget(queue1);
-	printf("%lf", c6->price);
+	printf("%lf", c2->price);
 
-	const void* key = (void*)77; 
-	qsearch(queue1, findYear,key); 
+	free(c);
+	free(c3);
+	free(c5);
+	free(c2);
+	free(c4);
+ 	free(c6);
 	qclose(queue1);
 	exit(EXIT_SUCCESS);
 }

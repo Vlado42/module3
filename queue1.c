@@ -55,6 +55,7 @@ bool findYear(void* elementp, const void* keyp)
 	fflush(stdout);
   if (((car_t*)elementp)->year == *(int *)keyp)
 		{
+			printf("found match at %d", ((car_t*)elementp)->year); 
 			return true;
 		}
 	else
@@ -82,13 +83,13 @@ int main(void)
 	int32_t z3 = qput(queue1, (void*)c3);
 	int32_t z5 = qput(queue1, (void*)c5);
 
-	qapply(queue1, doublePrice);
+	//	qapply(queue1, doublePrice);
 
 
 	//	printf("Size of queue is %d '\n'", size(queue1));
 	int val = 77;
 	const void* key = &val; 
-	void* myEl = qremove(queue1, findYear,key);
+	//void* myEl = qremove(queue1, findYear,key);
 	//car_t *cs = (car_t*)((myEl->data);
 	//if(myEl != NULL)
 	//	{

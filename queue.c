@@ -1,5 +1,5 @@
 /* queue.c --- 
-1;5202;0c * 
+1;5202;0c1;5202;0c * 
  * Author: Vlado Vojdanovski
  * Created: Wed Oct  9 16:21:59 2019 (-0400)
  * Version: 
@@ -71,6 +71,7 @@ int32_t qput(queue_t *qp, void *elementp)
 			((Queue*)qp)->head->prev = lastElement;
 			lastElement->next = ((Queue*)qp)->head;
 			((Queue*)qp)->head = lastElement;
+			lastElement->prev = NULL;
 		}
 	((Queue*)qp)->size+=1;
 	return 0;
@@ -83,8 +84,7 @@ void* qget(queue_t *qp)
 			Element *currElement = ((Queue*)qp)->head;
 			((Queue*)qp)->head = ((Queue*)qp)->head->next;
 			((Queue*)qp)->size-=1;
-	
-			return currElement->data; //currElement -> data  If we are accessing the car
+			return currElement; //currElement -> data  If we are accessing the car
 		}
 }
 
@@ -124,10 +124,10 @@ void* qremove(queue_t *qp, bool(*searchfn)(void* elementp, const void* keyp),
 							const void* skeyp)
 {
 	//Element *currElement = ((Queue*)qp)->head;
-	Element *foundElement = (Element*)(qsearch(qp, searchfn, skeyp));
+	Element *foundElement = qsearch(qp, searchfn, skeyp);
 	if (foundElement != NULL)
 		{
-			foundElement->prev->next = foundElement->next;
+			((Element*)(foundElement->prev))->next = foundElement->next;
 			free(foundElement);
 			((Queue*)qp)->size-=1;
 		}

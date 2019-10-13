@@ -38,62 +38,75 @@ int main(void)
 {
 	char plate[10];
 	strcpy(plate,"123");
-	//car_t *c=make_car(plate, 19.0, 77);
+	car_t *c=make_car(plate, 19.0, 77);
 
 	char plate1[10];
 	strcpy(plate1,"1243");
-	//car_t *c3=make_car(plate, 29.0, 73);
+	car_t *c3=make_car(plate, 29.0, 73);
 	//
 	char plate2[10];
 	strcpy(plate2,"1123");
-	//	car_t *c5=make_car(plate2, 39.0, 277);
+		car_t *c5=make_car(plate2, 39.0, 277);
 	
 	queue_t *queue1 = qopen();
-	//	int32_t z = qput(queue1, (void*)c);
-	//	int32_t z3 = qput(queue1, (void*)c3);
-	//	int32_t z5 = qput(queue1, (void*)c5);
+		int32_t z = qput(queue1, (void*)c);
+		int32_t z3 = qput(queue1, (void*)c3);
+ 	int32_t z5 = qput(queue1, (void*)c5);
 
-	//	qapply(queue1, doublePrice);
+ 	qapply(queue1, doublePrice);
 	
 	strcpy(plate,"123");
-	//car_t *c7=make_car(plate, 19.0, 77);
+	car_t *c7=make_car(plate, 19.0, 77);
 
 	
 	strcpy(plate1,"1243");
-	//car_t *c9=make_car(plate, 29.0, 73);
+	car_t *c9=make_car(plate, 29.0, 73);
 
 	
 	strcpy(plate2,"1123");
-	//car_t *c11=make_car(plate2, 39.0, 277);
+	car_t *c11=make_car(plate2, 39.0, 277);
 
 	queue_t *queue2 = qopen();
-	//	int32_t z7 = qput(queue2, (void*)c7);
-	//int32_t z9 = qput(queue2, (void*)c9);
-	//	int32_t z11 = qput(queue2, (void*)c11);
+		int32_t z7 = qput(queue2, (void*)c7);
+	int32_t z9 = qput(queue2, (void*)c9);
+		int32_t z11 = qput(queue2, (void*)c11);
 	
 	qconcat(queue1, queue2);
-	if (qget(queue1) != NULL)
+	void* get = qget(queue1);
+	if (get != NULL)
 	{
+		free(get);
 		car_t *c2 = (car_t*)qget(queue1);
 		printf("%lf", c2->price);
 		printf("\n");
+		free(c2);
 		car_t *c4 = (car_t*)qget(queue1);
 		printf("%lf", c4->price);
 		printf("\n");
+		free(c4);
 		car_t *c6 = (car_t*)qget(queue1);
 		printf("%lf", c6->price);
 		printf("\n");
+		free(c6);
 		car_t *c8 = (car_t*)qget(queue1);
 		printf("%lf", c8->price);
 		printf("\n");
+		free(c8);
 		car_t *c10 = (car_t*)qget(queue1);
 		printf("%lf", c10->price);
 		printf("\n");
-		car_t *c12 = (car_t*)qget(queue1);
-		printf("%lf", c12->price);
-		printf("\n");
+		free(c10);
+		//		car_t *c12 = (car_t*)qget(queue1);
+		//	printf("%lf", c12->price);
+		//printf("\n");
 		//	qclose(queue1);
 	}
+	free(c);
+	free(c3);
+	free(c5);
+	free(c7);
+	free(c9);
+	free(c11);
 	qclose(queue1);
-		exit(EXIT_SUCCESS);
+	exit(EXIT_SUCCESS);
 }

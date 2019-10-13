@@ -55,7 +55,7 @@ bool findYear(void* elementp, const void* keyp)
 	fflush(stdout);
   if (((car_t*)elementp)->year == *(int *)keyp)
 		{
-			printf("found match at %d", ((car_t*)elementp)->year); 
+			//			printf("found match at %d", ((car_t*)elementp)->year); 
 			return true;
 		}
 	else
@@ -83,28 +83,29 @@ int main(void)
 	int32_t z3 = qput(queue1, (void*)c3);
 	int32_t z5 = qput(queue1, (void*)c5);
 
-	//	qapply(queue1, doublePrice);
+	qapply(queue1, doublePrice);
 
 
 	//	printf("Size of queue is %d '\n'", size(queue1));
 	int val = 77;
 	const void* key = &val; 
-	//void* myEl = qremove(queue1, findYear,key);
-	//car_t *cs = (car_t*)((myEl->data);
-	//if(myEl != NULL)
-	//	{
-	//		printf("%d", cs->data);
-	//		printf("\n");
-	//	}
+	void* myEl = qremove(queue1, findYear,key);
+	car_t *cs = (car_t*)(myEl);
+	if(myEl != NULL)
+		{
+			printf("Found year %d", cs->year);
+			printf("\n");
+		}
 	//	printf("Size of queue is %d '\n'", size(queue1));
 	car_t *c2 = (car_t*)qget(queue1);
 	car_t *c4 = (car_t*)qget(queue1);
 	car_t *c6 = (car_t*)qget(queue1);
 	printf("%lf", c2->price);
 
-	free(c);
-	free(c3);
-	free(c5);
+	//  free(c);
+	//	free(c3);
+	//	free(c5);
+	free(cs);
 	free(c2);
 	free(c4);
  	free(c6);

@@ -84,7 +84,11 @@ void* qget(queue_t *qp)
 			Element *currElement = ((Queue*)qp)->head;
 			((Queue*)qp)->head = ((Queue*)qp)->head->next;
 			((Queue*)qp)->size-=1;
-			return currElement; //currElement -> data  If we are accessing the car
+			//free(currElement->next);
+			//free(currElement-prev);
+			void* data = currElement->data;
+			free(currElement);
+			return data; //currElement -> data  If we are accessing the car
 		}
 }
 
@@ -109,13 +113,13 @@ void* qsearch(queue_t *qp, bool(*searchfn)(void* elementp, const void*keyp),
 		{
 			if (searchfn(currElement->data, skeyp) == true)
 			{
-					return currElement; //currElement -> data  If we are accessing obj
+				return currElement->data; //currElement -> data  If we are accessing obj
  	 		}
 			currElement = (Element*)(currElement->next);
 		}
 	if (searchfn(currElement->data, skeyp) == true)
 		{
-			return currElement; //currElement -> data  If we are accessing obj
+			return currElement->data; //currElement -> data  If we are accessing obj
 		}
 	return NULL;
 }
@@ -123,15 +127,27 @@ void* qsearch(queue_t *qp, bool(*searchfn)(void* elementp, const void*keyp),
 void* qremove(queue_t *qp, bool(*searchfn)(void* elementp, const void* keyp),
 							const void* skeyp)
 {
-	//Element *currElement = ((Queue*)qp)->head;
-	Element *foundElement = qsearch(qp, searchfn, skeyp);
-	if (foundElement != NULL)
+	Element *currElement = ((Queue*)qp)->head;
+	while(currElement->next != NULL)
 		{
-			((Element*)(foundElement->prev))->next = foundElement->next;
-			free(foundElement);
+			if (searchfn(currElement->data, skeyp) == true)
+			{
+				void* data = currElement->data;
+			((Element*)(currElement->prev))->next = currElement->next;
+			free(currElement);
 			((Queue*)qp)->size-=1;
+			return data;
+ 	 		}
+			currElement = (Element*)(currElement->next);
 		}
-	return (void*)foundElement;
+	if (searchfn(currElement->data, skeyp) == true)
+		{
+			void* data = currElement->data;
+			((Element*)(currElement->prev))->next = currElement->next;
+			free(currElement);
+			((Queue*)qp)->size-=1;
+			return data; //currElement -> data  If we are accessing obj
+		}
 }
 
 void qconcat(queue_t *q1p, queue_t *q2p)

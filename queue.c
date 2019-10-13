@@ -58,7 +58,11 @@ void qclose(queue_t *qp) // function that deallocates queue memory
 int32_t qput(queue_t *qp, void *elementp) // put a new element in
 {
 	Element *lastElement; // initialize
-	lastElement = (Element*)malloc(sizeof(Element)); //allocate memory
+	if(!(lastElement = (Element*)malloc(sizeof(Element))))
+		{
+			return 1; //return 1 if memory allocation fails
+		}
+		
 	lastElement->data = elementp;
 	// assign our object to the data field  of our Element
 	if (((Queue*)qp)->size == 0) // if the queue is empty

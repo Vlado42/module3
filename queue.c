@@ -37,8 +37,8 @@ queue_t* qopen(void)
 	Queue  *Myqueue = (Queue*) malloc(sizeof(Queue)); // Initialize our queue
 	// and allocate memory
 	Myqueue->size = 0; // set the queue size to 0
-	Myqueue->head = (Element*)NULL; // set the head and tail pointers to null
-	Myqueue->tail = (Element*)NULL;
+	Myqueue->head = NULL; // set the head and tail pointers to null
+	Myqueue->tail = NULL;
 
 	return (queue_t*)Myqueue; //give the user a queue to work with
 	// note that we create a Queue object(has head and tail) but return a void
@@ -83,13 +83,15 @@ int32_t qput(queue_t *qp, void *elementp) // put a new element in
 		}
 	else
 		{
-			((Queue*)qp)->head->prev = lastElement;
+			((Queue*)qp)->tail->next = lastElement;
+			lastElement->prev = ((Queue*)qp)->tail;
+			
 			// put the head element in second place
-			lastElement->next = ((Queue*)qp)->head;
+		 	((Queue*)qp)->tail = lastElement;
 			// idit
-			((Queue*)qp)->head = lastElement;
+			//((Queue*)qp)->head = lastElement;
 			// have the head point to our new first element
-			lastElement->prev = NULL;
+			lastElement->next = NULL;
 		}
 	((Queue*)qp)->size+=1; 
 	return 0;
@@ -97,9 +99,7 @@ int32_t qput(queue_t *qp, void *elementp) // put a new element in
 
 void* qget(queue_t *qp)
 {
-	printf("This is the size %d \n",((Queue*)qp)->size);
-	fflush(stdout);
-	Element *currElement = ((Queue*)qp)->head; // grab our element
+	Element* currElement = ((Queue*)qp)->head; // grab our element
 	if(currElement != NULL)
 		{
 			((Queue*)qp)->head = ((Queue*)qp)->head->next; // remove it
@@ -180,12 +180,15 @@ void qconcat(queue_t *q1p, queue_t *q2p)
 {
 	if (((Queue*)q2p)->size == 0) // if the size of the 2nd is zero
 		{
+			//		printf("%d",((Queue*)q2p)->head->data->year);
 			qclose(q2p); // close the 2nd and do nothing else
 		}	
 	if (((Queue*)q1p)->size > 0) // if they are both bigger than 0
 		{
 			if (((Queue*)q2p)->size > 0)
-				{					
+				{
+					//	printf("%d",((Queue*)q2p)->head->data->year);
+					//					printf("%Element*",((Queue*)q2p)->head);
 					// have Queue 1's tail next point to the q2p head
 					// have queue 1's tail pointer poin to the new tail
 					((((Queue*)q1p)->tail)->next) = ((Queue*)q2p)->head;
@@ -193,8 +196,8 @@ void qconcat(queue_t *q1p, queue_t *q2p)
 					((Queue*)q1p)->size+=((Queue*)q2p)->size;
 
 					((Queue*)q2p)->size = 0;
-					((Queue*)q2p)->head=NULL;
-					((Queue*)q2p)->tail=NULL;
+					//((Queue*)q2p)->head=NULL;
+					//((Queue*)q2p)->tail=NULL;
 					// add their sizes
 					qclose(q2p);
 					//close our now empty queue

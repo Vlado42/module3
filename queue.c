@@ -37,8 +37,8 @@ queue_t* qopen(void)
 	Queue  *Myqueue = (Queue*) malloc(sizeof(Queue)); // Initialize our queue
 	// and allocate memory
 	Myqueue->size = 0; // set the queue size to 0
-	Myqueue->head = NULL; // set the head and tail pointers to null
-	Myqueue->tail = NULL;
+	Myqueue->head = (Element*)NULL; // set the head and tail pointers to null
+	Myqueue->tail = (Element*)NULL;
 
 	return (queue_t*)Myqueue; //give the user a queue to work with
 	// note that we create a Queue object(has head and tail) but return a void

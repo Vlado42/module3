@@ -131,18 +131,21 @@ void* qsearch(queue_t *qp, bool(*searchfn)(void* elementp, const void*keyp),
 						 const void* skeyp)
 {
 	Element *currElement = ((Queue*)qp)->head; 
-	while(currElement->next != NULL)
+	if (currElement != NULL)
 		{
+			while(currElement->next != NULL)
+				{
+					if (searchfn(currElement->data, skeyp) == true)
+						{
+							return currElement->data; // if we find the data return it
+						}
+					currElement = (Element*)(currElement->next);
+				}
 			if (searchfn(currElement->data, skeyp) == true)
-			{
-				return currElement->data; // if we find the data return it
- 	 		}
-			currElement = (Element*)(currElement->next);
-		}
-	if (searchfn(currElement->data, skeyp) == true)
-		{
-			return currElement->data;
-			//note that the while doesn't handle the nth element
+				{
+					return currElement->data;
+					//note that the while doesn't handle the nth element
+				}
 		}
 	return NULL; // NULL if no matches are found
 }
@@ -153,35 +156,37 @@ void* qremove(queue_t *qp, bool(*searchfn)(void* elementp, const void* keyp),
 							const void* skeyp)
 {
 	Element *currElement = ((Queue*)qp)->head;
-
-	if (searchfn(currElement->data, skeyp) == true)
-		{
-			((Queue*)qp)->head = ((Queue*)qp)->head->next;
-			void* data = currElement->data;
-			free(currElement);
-			((Queue*)qp)->size-=1;
-			return data;
-		}
-	currElement = (Element*)(currElement->next);
-	while(currElement->next != NULL)
+  if (currElement != NULL)
 		{
 			if (searchfn(currElement->data, skeyp) == true)
-			{
-			void* data = currElement->data;
-			currElement->prev->next = currElement->next;
-			free(currElement);
-			((Queue*)qp)->size-=1;
-			return data;
- 	 		}
+				{
+					((Queue*)qp)->head = ((Queue*)qp)->head->next;
+					void* data = currElement->data;
+					free(currElement);
+					((Queue*)qp)->size-=1;
+					return data;
+				}
 			currElement = (Element*)(currElement->next);
-		}
-	if (searchfn(currElement->data, skeyp) == true)
-		{
-			void* data = currElement->data;
-			((Element*)(currElement->prev))->next = currElement->next;
-			free(currElement);
-			((Queue*)qp)->size-=1;
-			return data; //currElement -> data  If we are accessing obj
+			while(currElement->next != NULL)
+				{
+					if (searchfn(currElement->data, skeyp) == true)
+						{
+							void* data = currElement->data;
+							currElement->prev->next = currElement->next;
+							free(currElement);
+							((Queue*)qp)->size-=1;
+							return data;
+						}
+					currElement = (Element*)(currElement->next);
+				}
+			if (searchfn(currElement->data, skeyp) == true)
+				{
+					void* data = currElement->data;
+					((Element*)(currElement->prev))->next = currElement->next;
+					free(currElement);
+					((Queue*)qp)->size-=1;
+					return data; //currElement -> data  If we are accessing obj
+				}
 		}
 	return NULL;
 }

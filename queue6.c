@@ -57,11 +57,11 @@ int main(void){
   //hput(hp, (void *)person2, (const char *)person2->name, sizeof(person2->name));
   //hput(hp, (void *)person3, (const char *)person3->name, sizeof(person3->name));
   //hput(hp, (void *)person4, (const char *)person4->name, sizeof(person4->name));
-	qput(hp, (void*)person1);
-	qput(hp, (void*)person2);
-	qput(hp, (void*)person3);
-	qput(hp, (void*)person4);
-  // Make sure we are returning the right values when we search for it
+	//	qput(hp, (void*)person1);
+	//qput(hp, (void*)person2);
+	//qput(hp, (void*)person3);
+	//qput(hp, (void*)person4);
+  //xc Make sure we are returning the right values when we search for it
 
   char *returnedName = qremove(hp, searchByName, (const char *)person1->name);
   if(strcmp(returnedName,"Sudharsan") != 0){

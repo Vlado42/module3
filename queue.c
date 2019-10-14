@@ -114,16 +114,18 @@ void* qget(queue_t *qp)
 void qapply(queue_t *qp, void(*fn)(void* elementp))
 {
 	Element *currElement = ((Queue*)qp)->head;
-	// grab the first element	
-	while (currElement->next != NULL) // cycle through n-1 elements
+	// grab the first element
+	if(currElement != NULL)
 		{
-			fn(currElement->data); // apply the function
-			currElement = (Element*)(currElement->next);
+			while (currElement->next != NULL) // cycle through n-1 elements
+				{
+					fn(currElement->data); // apply the function
+					currElement = (Element*)(currElement->next);
+				}
+			fn(currElement->data); // apply the function to the last element
+			// note that the while exits before applying to the last element
 		}
-	fn(currElement->data); // apply the function to the last element
-	// note that the while exits before applying to the last element
 }
-
 
 void* qsearch(queue_t *qp, bool(*searchfn)(void* elementp, const void*keyp),
 						 const void* skeyp)

@@ -47,11 +47,19 @@ queue_t* qopen(void)
 void qclose(queue_t *qp) // function that deallocates queue memory
 {
 	Element *element;
-	while(((Queue*)qp)->size > 0) // we free the memory of each element
-			{
-				element = (Element*)qget(qp);
-				free(element); 
-			}
+	element = (Element*)qget(qp);
+	if (element==NULL)
+		{
+			free(element);
+		}
+	else
+		{
+			while(element->next != NULL) // we free the memory of each element
+				{
+					element = (Element*)qget(qp);
+					free(element); 
+				}
+		}
 	free(qp); // we finally free the memory allocated for the queue itself
 }
 
@@ -88,6 +96,8 @@ int32_t qput(queue_t *qp, void *elementp) // put a new element in
 
 void* qget(queue_t *qp)
 {
+	printf("This is the size %d \n",((Queue*)qp)->size);
+	fflush(stdout);
 	if(((Queue*)qp)->size>0)
 		{
 			Element *currElement = ((Queue*)qp)->head; // grab our element
@@ -97,6 +107,7 @@ void* qget(queue_t *qp)
 			free(currElement); // free the memory
 			return data; //return the data
 		}
+	return NULL;
 }
 
 void qapply(queue_t *qp, void(*fn)(void* elementp))
@@ -159,6 +170,7 @@ void* qremove(queue_t *qp, bool(*searchfn)(void* elementp, const void* keyp),
 			((Queue*)qp)->size-=1;
 			return data; //currElement -> data  If we are accessing obj
 		}
+	return NULL;
 }
 
 // queue concatenation of 2 queues
@@ -172,11 +184,15 @@ void qconcat(queue_t *q1p, queue_t *q2p)
 		{
 			if (((Queue*)q2p)->size > 0)
 				{					
-					((Element*)(((Queue*)q1p)->tail))->next = ((Queue*)q2p)->head;
-					((Queue*)q1p)->tail = ((Queue*)q2p)->tail;
 					// have Queue 1's tail next point to the q2p head
 					// have queue 1's tail pointer poin to the new tail
+					((((Queue*)q1p)->tail)->next) = ((Queue*)q2p)->head;
+					(((Queue*)q1p)->tail) = ((Queue*)q2p)->tail;
 					((Queue*)q1p)->size+=((Queue*)q2p)->size;
+
+					((Queue*)q2p)->size = 0;
+					((Queue*)q2p)->head=NULL;
+					((Queue*)q2p)->tail=NULL;
 					// add their sizes
 					qclose(q2p);
 					//close our now empty queue

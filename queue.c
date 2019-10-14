@@ -54,6 +54,7 @@ void qclose(queue_t *qp) // function that deallocates queue memory
 		}
 	else
 		{
+			element = (Element*)qget(qp);
 			while(element->next != NULL) // we free the memory of each element
 				{
 					element = (Element*)qget(qp);
@@ -98,9 +99,9 @@ void* qget(queue_t *qp)
 {
 	printf("This is the size %d \n",((Queue*)qp)->size);
 	fflush(stdout);
-	if(((Queue*)qp)->size>0)
+	Element *currElement = ((Queue*)qp)->head; // grab our element
+	if(currElement != NULL)
 		{
-			Element *currElement = ((Queue*)qp)->head; // grab our element
 			((Queue*)qp)->head = ((Queue*)qp)->head->next; // remove it
 			((Queue*)qp)->size-=1;
 			void* data = currElement->data; //grab the data
@@ -150,6 +151,7 @@ void* qremove(queue_t *qp, bool(*searchfn)(void* elementp, const void* keyp),
 							const void* skeyp)
 {
 	Element *currElement = ((Queue*)qp)->head;
+	
 	while(currElement->next != NULL)
 		{
 			if (searchfn(currElement->data, skeyp) == true)

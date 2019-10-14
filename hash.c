@@ -1,4 +1,4 @@
-/* 
+/*Claire Collins
  * hash.c -- implements a generic hash table as an indexed set of queues.
  *
  */
@@ -15,9 +15,11 @@
  */
 #define get16bits(d) (*((const uint16_t *) (d)))
 
-typedef struct hashtable {
-	queue_t *table[40];
+typedef struct hashtable_t{
+	uint32_t size;
+	queue_t **table;
 } hashtable_t;
+	
 
 static uint32_t SuperFastHash (const char *data,int len,uint32_t tablesize) {
   uint32_t hash = len, tmp;
@@ -61,32 +63,34 @@ static uint32_t SuperFastHash (const char *data,int len,uint32_t tablesize) {
 }
 
 hashtable_t *hopen(uint32_t hsize){
-	hashtable_t *p = (hashtable_t*) malloc(sizeof(hashtable_t));
-	queue_t *table[hsize];
-	p->table=&table;
-	//p->table=&table;
-	return p;
+	hashtable_t *tp = (hashtable_t*)malloc(sizeof(hashtable_t));
+	queue_t **ap=(queue_t**) malloc(hsize*sizeof(queue_t*));
+
+ 	tp->size=hsize;
+	tp->table=ap;
+	//queue_t *p=tp->table;
+	for(int i=0;i<hsize;i++)
+		{
+			ap[i]=qopen();
+			//queue_t *q=NULL;
+		}
+	return tp;
 }
 
 void hclose(hashtable_t *htp){
-	for (int x=1;x<sizeof(*htp);x++){
-			if (htp->table[x]!=NULL){
-				qclose(htp->table[x]);
-			}
+	queue_t **tp = htp->table;
+	for (int i=0;i<htp->size;i++){
+		queue_t *p=tp[i];
+		qclose(p);
 		}
+	free(htp->table);
 	free(htp);
 }
 
 int32_t hput(hashtable_t *htp, void *ep, const char *key, int keylen){
-	uint32_t p=SuperFastHash(key, keylen, sizeof(htp->table));
-		if(htp->table[p]==NULL){
-			queue_t *q=qopen();
-			qput(q, ep);
-			htp->table[p]=q; 
-		}
-		else {
-			qput(htp->table[p], ep);
-		}
+	uint32_t p=SuperFastHash(key, keylen, htp->size);
+	queue_t **tp=htp->table;
+	qput(tp[p], ep);
 	return 0;
 }
 
@@ -102,7 +106,7 @@ void *hsearch(hashtable_t *htp,
         bool (*searchfn)(void* elementp, const void* searchkeyp),              
         const char *key,                                                       
 							int32_t keylen){
-	uint32_t p=SuperFastHash(key, keylen, sizeof(htp->table));
+	uint32_t p=SuperFastHash(key, keylen, htp->size);
 	queue_t *q=htp->table[p];
 	return qsearch(q, searchfn, key);
  	}

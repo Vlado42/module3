@@ -212,8 +212,8 @@ void qconcat(queue_t *q1p, queue_t *q2p)
 					((Queue*)q1p)->size+=((Queue*)q2p)->size;
 
 					((Queue*)q2p)->size = 0;
-					//((Queue*)q2p)->head=NULL;
-					//((Queue*)q2p)->tail=NULL;
+					((Queue*)q2p)->head=NULL;
+					((Queue*)q2p)->tail=NULL;
 					// add their sizes
 					qclose(q2p);
 					//close our now empty queue

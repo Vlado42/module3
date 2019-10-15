@@ -64,7 +64,7 @@ int main(void){
   //xc Make sure we are returning the right values when we search for it
 
   char *returnedName = qremove(hp, searchByName, (const char *)person1->name);
-  if(strcmp(returnedName,"Sudharsan") != 0){
+  if( (returnedName == NULL) ||(strcmp(returnedName,"Sudharsan") != 0)){
     printf("Failure: Someone returned, but not who we think!\n");
     exit(EXIT_FAILURE);
   }

@@ -201,24 +201,39 @@ void qconcat(queue_t *q1p, queue_t *q2p)
 			//		printf("%d",((Queue*)q2p)->head->data->year);
 			qclose(q2p); // close the 2nd and do nothing else
 		}	
-	if (((Queue*)q1p)->size > 0) // if they are both bigger than 0
-		{
-			if (((Queue*)q2p)->size > 0)
+	if (((Queue*)q2p)->size > 0)
 				{
-					//	printf("%d",((Queue*)q2p)->head->data->year);
-					//					printf("%Element*",((Queue*)q2p)->head);
-					// have Queue 1's tail next point to the q2p head
-					// have queue 1's tail pointer poin to the new tail
-					((((Queue*)q1p)->tail)->next) = ((Queue*)q2p)->head;
-					(((Queue*)q1p)->tail) = ((Queue*)q2p)->tail;
-					((Queue*)q1p)->size+=((Queue*)q2p)->size;
+					if (((Queue*)q1p)->size > 0) // if they are both bigger than 0
+						{
+							//	printf("%d",((Queue*)q2p)->head->data->year);
+							//					printf("%Element*",((Queue*)q2p)->head);
+							// have Queue 1's tail next point to the q2p head
+							// have queue 1's tail pointer poin to the new tail
+							((((Queue*)q1p)->tail)->next) = ((Queue*)q2p)->head;
+							(((Queue*)q1p)->tail) = ((Queue*)q2p)->tail;
+							((Queue*)q1p)->size+=((Queue*)q2p)->size;
+							
+							((Queue*)q2p)->size = 0;
+							((Queue*)q2p)->head=NULL;
+							((Queue*)q2p)->tail=NULL;
+							// add their sizes
+							qclose(q2p);
+							//close our now empty queue
+						}
+					if (((Queue*)q1p)->size == 0)
+						{
+							Element *newHead = ((Queue*)q2p)->head;
+							Element *newTail = ((Queue*)q2p)->tail;
+						  ((Queue*)q1p)->size+=((Queue*)q2p)->size;
 
-					((Queue*)q2p)->size = 0;
-					((Queue*)q2p)->head=NULL;
-					((Queue*)q2p)->tail=NULL;
-					// add their sizes
-					qclose(q2p);
-					//close our now empty queue
+							((Queue*)q1p)->head = newHead;
+							((Queue*)q1p)->tail = newTail;
+							
+							((Queue*)q2p)->size = 0;
+							((Queue*)q2p)->head=NULL;
+							((Queue*)q2p)->tail=NULL;
+							// add their sizes
+							qclose(q2p);
+						}
 				}
-		}
 }

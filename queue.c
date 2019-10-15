@@ -154,10 +154,9 @@ void* qsearch(queue_t *qp, bool(*searchfn)(void* elementp, const void*keyp),
 
 
 //same as search but we remove the element itself and free memory
-void* qremove(queue_t *qp, bool(*searchfn)(void* elementp, const void* keyp),
-							const void* skeyp)
+void* qremove(queue_t *qp, bool(*searchfn)(void* elementp, const void* keyp),const void* skeyp)
 {
-	Element *currElement = ((Queue*)qp)->head;
+  Element *currElement = ((Queue*)qp)->head;
   if (currElement != NULL)
 		{
 			if (searchfn(currElement->data, skeyp) == true)
@@ -168,19 +167,21 @@ void* qremove(queue_t *qp, bool(*searchfn)(void* elementp, const void* keyp),
 					((Queue*)qp)->size-=1;
 					return data;
 				}
-			currElement = (Element*)(currElement->next);
-			while(currElement->next != NULL)
-				{
-					if (searchfn(currElement->data, skeyp) == true)
+			if(currElement->next!=NULL){
+				currElement = (Element*)(currElement->next);
+					while(currElement->next != NULL)
 						{
-							void* data = currElement->data;
-							currElement->prev->next = currElement->next;
-							free(currElement);
-							((Queue*)qp)->size-=1;
-							return data;
+							if (searchfn(currElement->data, skeyp) == true)
+								{
+									void* data = currElement->data;
+									currElement->prev->next = currElement->next;
+									free(currElement);
+									((Queue*)qp)->size-=1;
+									return data;
+								}
+							currElement = (Element*)(currElement->next);
 						}
-					currElement = (Element*)(currElement->next);
-				}
+			}
 			if (searchfn(currElement->data, skeyp) == true)
 				{
 					void* data = currElement->data;

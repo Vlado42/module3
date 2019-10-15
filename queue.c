@@ -46,16 +46,21 @@ queue_t* qopen(void)
 
 void qclose(queue_t *qp) // function that deallocates queue memory
 {
-	Element *element;
-	element = (Element*)qget(qp);
-	if (element!=NULL)
+//	Element *element;
+//	element = (Element*)qget(qp);
+	Element* currElement = ((Queue*)qp)->head;
+	if (currElement!=NULL)
 		{
-			free(element);
+			Element* nextElement = currElement->next;
+			free(currElement);
 			//			element = (Element*)qget(qp);
-			while(element->next != NULL) // we free the memory of each element
+			while(nextElement != NULL) // we free the memory of each element
 				{
-					element = (Element*)qget(qp);
-					free(element); 
+					//element = (Element*)qget(qp);
+					//free(element);
+					currElement = nextElement;
+					nextElement = currElement->next;
+					free(currElement);
 				}
 		}
 	free(qp); // we finally free the memory allocated for the queue itself

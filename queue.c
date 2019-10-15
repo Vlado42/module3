@@ -46,19 +46,21 @@ queue_t* qopen(void)
 
 void qclose(queue_t *qp) // function that deallocates queue memory
 {
-	Element *element;
-	element = (Element*)qget(qp);
-	if (element==NULL)
+//	Element *element;
+//	element = (Element*)qget(qp);
+	Element* currElement = ((Queue*)qp)->head;
+	if (currElement!=NULL)
 		{
-			free(element);
-		}
-	else
-		{
+			Element* nextElement = currElement->next;
+			free(currElement);
 			//			element = (Element*)qget(qp);
-			while(element->next != NULL) // we free the memory of each element
+			while(nextElement != NULL) // we free the memory of each element
 				{
-					element = (Element*)qget(qp);
-					free(element); 
+					//element = (Element*)qget(qp);
+					//free(element);
+					currElement = nextElement;
+					nextElement = currElement->next;
+					free(currElement);
 				}
 		}
 	free(qp); // we finally free the memory allocated for the queue itself
@@ -166,19 +168,21 @@ void* qremove(queue_t *qp, bool(*searchfn)(void* elementp, const void* keyp),
 					((Queue*)qp)->size-=1;
 					return data;
 				}
-			currElement = (Element*)(currElement->next);
-			while(currElement->next != NULL)
-				{
-					if (searchfn(currElement->data, skeyp) == true)
+			if(currElement->next!=NULL){
+				currElement = (Element*)(currElement->next);
+					while(currElement->next != NULL)
 						{
-							void* data = currElement->data;
-							currElement->prev->next = currElement->next;
-							free(currElement);
-							((Queue*)qp)->size-=1;
-							return data;
+							if (searchfn(currElement->data, skeyp) == true)
+								{
+									void* data = currElement->data;
+									currElement->prev->next = currElement->next;
+									free(currElement);
+									((Queue*)qp)->size-=1;
+									return data;
+								}
+							currElement = (Element*)(currElement->next);
 						}
-					currElement = (Element*)(currElement->next);
-				}
+			}
 			if (searchfn(currElement->data, skeyp) == true)
 				{
 					void* data = currElement->data;
@@ -212,8 +216,8 @@ void qconcat(queue_t *q1p, queue_t *q2p)
 					((Queue*)q1p)->size+=((Queue*)q2p)->size;
 
 					((Queue*)q2p)->size = 0;
-					//((Queue*)q2p)->head=NULL;
-					//((Queue*)q2p)->tail=NULL;
+					((Queue*)q2p)->head=NULL;
+					((Queue*)q2p)->tail=NULL;
 					// add their sizes
 					qclose(q2p);
 					//close our now empty queue

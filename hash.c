@@ -14,12 +14,10 @@
  * Hash.
  */
 #define get16bits(d) (*((const uint16_t *) (d)))
-
 typedef struct hashtable_t{
 	uint32_t size;
 	queue_t **table;
 } hashtable_t;
-	
 
 static uint32_t SuperFastHash (const char *data,int len,uint32_t tablesize) {
   uint32_t hash = len, tmp;
@@ -62,12 +60,13 @@ static uint32_t SuperFastHash (const char *data,int len,uint32_t tablesize) {
   return hash % tablesize;
 }
 
-hashtable_t *hopen(uint32_t hsize){
+hashtable_t *hopen(uint32_t hsize)
+{
 	hashtable_t *tp = (hashtable_t*)malloc(sizeof(hashtable_t));
 	queue_t **ap=(queue_t**) malloc(hsize*sizeof(queue_t*));
-
  	tp->size=hsize;
 	tp->table=ap;
+
 	//queue_t *p=tp->table;
 	for(int i=0;i<hsize;i++)
 		{
@@ -77,45 +76,54 @@ hashtable_t *hopen(uint32_t hsize){
 	return tp;
 }
 
-void hclose(hashtable_t *htp){
+void hclose(hashtable_t *htp)
+{
 	queue_t **tp = htp->table;
-	for (int i=0;i<htp->size;i++){
+	for (int i=0;i<htp->size;i++)
+	{
 		queue_t *p=tp[i];
 		qclose(p);
-		}
+	}
 	free(htp->table);
 	free(htp);
 }
 
-int32_t hput(hashtable_t *htp, void *ep, const char *key, int keylen){
+
+
+int32_t hput(hashtable_t *htp, void *ep, const char *key, int keylen)
+{
 	uint32_t p=SuperFastHash(key, keylen, htp->size);
 	queue_t **tp=htp->table;
 	qput(tp[p], ep);
 	return 0;
 }
 
-void happly(hashtable_t *htp, void (*fn)(void* ep)){
-	for(int i=0;i<sizeof(*htp);i++) {
-		if(htp->table[i]!=NULL){
+
+
+void happly(hashtable_t *htp, void (*fn)(void* ep))
+{
+	for(int i=0;i<htp->size;i++) 
+	{
+		if(htp->table[i]!=NULL)
+		{
 			qapply(htp->table[i], fn);
 		}
 	}
 }
 
-void *hsearch(hashtable_t *htp,                                                
-        bool (*searchfn)(void* elementp, const void* searchkeyp),              
-        const char *key,                                                       
-							int32_t keylen){
+
+
+void *hsearch(hashtable_t *htp, bool (*searchfn)(void* elementp, const void* searchkeyp), const char *key, int32_t keylen)
+{
 	uint32_t p=SuperFastHash(key, keylen, htp->size);
 	queue_t *q=htp->table[p];
 	return qsearch(q, searchfn, key);
- 	}
+ }
 
-void *hremove(hashtable_t *htp,                                                
-        bool (*searchfn)(void* elementp, const void* searchkeyp),              
-        const char *key,                                                       
-							int32_t keylen){
-	uint32_t p=SuperFastHash(key, keylen, sizeof(htp->table));
+void *hremove(hashtable_t *htp,bool (*searchfn)(void* elementp, const void* searchkeyp), const char *key, int32_t keylen)
+{
+	uint32_t p=SuperFastHash(key, keylen, htp->size);
 	return qremove(htp->table[p], searchfn, key);
+
 }
 

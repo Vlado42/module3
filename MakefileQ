@@ -1,6 +1,6 @@
 CFLAGS=-Wall -pedantic -std=c11 -I. -g
 
-all: queue1 queue2 queue3 queue4 queue5 queue6 queue7 queue8
+all: queue1 queue2 queue3 queue4 queue5 queue6 queue7 queue8 
 
 %o: %.c %.h
 				gcc ${CFLAGS} -c $<
@@ -28,6 +28,6 @@ queue7: queue7.o queue.o
 
 queue8: queue8.o queue.o
 				gcc ${CFLAGS} queue.o queue8.o -o $@
-
+				
 clean:
-			*.o *~ queue1 queue2 queue3 queue4 queue5 queue6 queue7 queue8
+			*.o *~ queue1 queue2 queue3 queue4 queue5 queue6 queue7 queue8 

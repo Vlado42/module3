@@ -66,14 +66,15 @@ int main(void){
   char *returnedName = qremove(hp, searchByName, (const char *)person1->name);
   if( (returnedName == NULL) ||(strcmp(returnedName,"Sudharsan") != 0)){
     printf("Failure: Someone returned, but not who we think!\n");
-    exit(EXIT_FAILURE);
-  }
-
-	qclose(hp);
+		qclose(hp);
 	free(person1);
 	free(person2);
 	free(person3);
 	free(person4);
+    exit(EXIT_FAILURE);
+  }
+
+	
 	free(returnedName);
 	
   printf("testhRemoveValidity Succeeded!\n");

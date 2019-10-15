@@ -74,5 +74,10 @@ int main(void)
 			printf("Failure");
 		}
 
+	free(c2);
+	free(c4);
+	free(c6);
+	qclose(queue1);
+
 	exit(EXIT_SUCCESS);
 }

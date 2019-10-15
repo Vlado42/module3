@@ -44,8 +44,16 @@ bool findYear(void* elementp, const void* keyp){
 			return false;
 		}
 }
-void mak(void* ele){
+void mak(void* ele){       //turns all ppl year to 80
 	((ppl_t*)ele)->year=80;
+}
+bool is33(void* ele, const void* keyp){
+	if (((ppl_t*)ele)->year==33){
+		return true;
+	}
+	else {
+		return false;
+	}
 }
 
 int main(void){
@@ -53,21 +61,27 @@ int main(void){
 	hashtable_t *hash2 = hopen(7);
  	ppl_t *g=make(33);
 	ppl_t *y=make(37);
-	if(hput(hash,(void*) g, "whats", 5)!=0){
+	if(hput(hash,(void*) g, "whats", 5)!=0){    //puts to empty hash
 	exit(EXIT_FAILURE);
 	}
-	if(hput(hash, (void*) y, "whats", 5)!=0){
+	if(hput(hash, (void*) y, "whats", 5)!=0){   //puts to nonempty hash
 		exit(EXIT_FAILURE);
 	}
 	//ppl_t *result= (ppl_t*)
-	hsearch(hash, findYear, "whats", 5);
-	//printf("%d",result->year);
-	//if (result->year!=33){
-	//exit(EXIT_FAILURE);
-	//}
-	free(hremove(hash, findYear, "whats", 5));
+	hsearch(hash2, findYear, "whats", 5);                //searches filled hash table
+	if(hsearch(hash, findYear, "whats", 5)!=NULL){       //searches empty hashtable
+		exit(EXIT_FAILURE);
+	}
+	
+	if(hremove(hash, is33, "whats", 5)!=g){ //removes from valid key
+		exit(EXIT_FAILURE);
+	}
+	
+	if(hremove(hash, is33, "whats", 5)!=NULL){ //no func exists
+			exit(EXIT_FAILURE);
+	}
 	happly(hash, mak);
-	if(y->year!=80){
+	if(y->year!=80){       //tests happly
 		exit(EXIT_FAILURE);
 	}
 	

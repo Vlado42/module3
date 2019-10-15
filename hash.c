@@ -95,17 +95,14 @@ int32_t hput(hashtable_t *htp, void *ep, const char *key, int keylen){
 }
 
 void happly(hashtable_t *htp, void (*fn)(void* ep)){
-	for(int i=0;i<sizeof(*htp);i++) {
+	for(int i=0;i<htp->size;i++) {
 		if(htp->table[i]!=NULL){
 			qapply(htp->table[i], fn);
 		}
 	}
 }
 
-void *hsearch(hashtable_t *htp,                                                
-        bool (*searchfn)(void* elementp, const void* searchkeyp),              
-        const char *key,                                                       
-							int32_t keylen){
+void *hsearch(hashtable_t *htp, bool (*searchfn)(void* elementp, const void* searchkeyp), const char *key, int32_t keylen){
 	uint32_t p=SuperFastHash(key, keylen, htp->size);
 	queue_t *q=htp->table[p];
 	return qsearch(q, searchfn, key);
@@ -115,7 +112,7 @@ void *hremove(hashtable_t *htp,
         bool (*searchfn)(void* elementp, const void* searchkeyp),              
         const char *key,                                                       
 							int32_t keylen){
-	uint32_t p=SuperFastHash(key, keylen, sizeof(htp->table));
+	uint32_t p=SuperFastHash(key, keylen, htp->size);
 	return qremove(htp->table[p], searchfn, key);
 }
 

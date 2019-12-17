@@ -17,7 +17,7 @@
 #include <stdbool.h>
 #include "queue.h"
 
-typedef struct element // a struct for each queue node
+typedef struct element // a struct for each queue node with data, next and prev
 {
 	void* data;
 	struct element *next;
@@ -26,8 +26,8 @@ typedef struct element // a struct for each queue node
 	
 typedef struct queue // a helper struct that stores the queue head and tail
 {
-	int size;
-	Element* head;
+  int size; // the size is not used in our implementation but may be useful for other developers
+  Element* head;
   Element* tail;
 } Queue;
 
@@ -46,18 +46,15 @@ queue_t* qopen(void)
 
 void qclose(queue_t *qp) // function that deallocates queue memory
 {
-//	Element *element;
-//	element = (Element*)qget(qp);
 	Element* currElement = ((Queue*)qp)->head;
+	
+	// we separately check the first element and then loop over all other elements
 	if (currElement!=NULL)
 		{
 			Element* nextElement = currElement->next;
 			free(currElement);
-			//			element = (Element*)qget(qp);
 			while(nextElement != NULL) // we free the memory of each element
 				{
-					//element = (Element*)qget(qp);
-					//free(element);
 					currElement = nextElement;
 					nextElement = currElement->next;
 					free(currElement);
@@ -68,7 +65,7 @@ void qclose(queue_t *qp) // function that deallocates queue memory
 
 int32_t qput(queue_t *qp, void *elementp) // put a new element in
 {
-	Element *lastElement; // initialize
+	Element *lastElement; // initialize the element
 	if(!(lastElement = (Element*)malloc(sizeof(Element))))
 		{
 			return 1; //return 1 if memory allocation fails
@@ -80,20 +77,17 @@ int32_t qput(queue_t *qp, void *elementp) // put a new element in
 		{
 			((Queue*)qp)->head = lastElement; // have both the head and tail point to the new element
 			((Queue*)qp)->tail = lastElement;
-			lastElement->next = NULL; //of course it h as neither a next or a prev
+			lastElement->next = NULL; //the first element has neither a next or a prev
 			lastElement->prev = NULL;
 		}
-	else
+	else // if the queue is not empty
 		{
-			((Queue*)qp)->tail->next = lastElement;
+			((Queue*)qp)->tail->next = lastElement; 
 			lastElement->prev = ((Queue*)qp)->tail;
 			
 			// put the head element in second place
 		 	((Queue*)qp)->tail = lastElement;
-			// idit
-			//((Queue*)qp)->head = lastElement;
-			// have the head point to our new first element
-			lastElement->next = NULL;
+			lastElement->next = NULL; // our new element has a null next pointer
 		}
 	((Queue*)qp)->size+=1; 
 	return 0;
@@ -124,10 +118,11 @@ void qapply(queue_t *qp, void(*fn)(void* elementp))
 					fn(currElement->data); // apply the function
 					currElement = (Element*)(currElement->next);
 				}
-			fn(currElement->data); // apply the function to the last element
 			// note that the while exits before applying to the last element
+			fn(currElement->data); // apply the function to the last element			
 		}
 }
+
 
 void* qsearch(queue_t *qp, bool(*searchfn)(void* elementp, const void*keyp),
 						 const void* skeyp)
@@ -143,10 +138,10 @@ void* qsearch(queue_t *qp, bool(*searchfn)(void* elementp, const void*keyp),
 						}
 					currElement = (Element*)(currElement->next);
 				}
+		        //note that the while doesn't handle the nth element
 			if (searchfn(currElement->data, skeyp) == true)
 				{
-					return currElement->data;
-					//note that the while doesn't handle the nth element
+					return currElement->data;	
 				}
 		}
 	return NULL; // NULL if no matches are found
@@ -198,16 +193,13 @@ void* qremove(queue_t *qp, bool(*searchfn)(void* elementp, const void* keyp),con
 void qconcat(queue_t *q1p, queue_t *q2p)
 {
 	if (((Queue*)q2p)->size == 0) // if the size of the 2nd is zero
-		{
-			//		printf("%d",((Queue*)q2p)->head->data->year);
+		{	
 			qclose(q2p); // close the 2nd and do nothing else
 		}	
 	if (((Queue*)q2p)->size > 0)
 				{
 					if (((Queue*)q1p)->size > 0) // if they are both bigger than 0
 						{
-							//	printf("%d",((Queue*)q2p)->head->data->year);
-							//					printf("%Element*",((Queue*)q2p)->head);
 							// have Queue 1's tail next point to the q2p head
 							// have queue 1's tail pointer poin to the new tail
 							((((Queue*)q1p)->tail)->next) = ((Queue*)q2p)->head;
